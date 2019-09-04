@@ -1,5 +1,5 @@
-#include <test/tools/jsontests/StateTests.h>
 #include <test/tools/jsontests/BlockChainTests.h>
+#include <test/tools/jsontests/StateTests.h>
 #include <test/tools/libtesteth/TestHelper.h>
 
 #include <boost/test/unit_test.hpp>
@@ -60,7 +60,7 @@ public:
         string const casename = boost::unit_test::framework::current_test_case().p_name;
         boost::filesystem::path suiteFillerPath = suite.getFullPathFiller(casename).parent_path();
 
-        //skip this test suite if not run with --all flag (cases are already tested in state tests)
+        // skip this test suite if not run with --all flag (cases are already tested in state tests)
         if (!test::Options::get().all)
         {
             cnote << "Skipping hive test " << casename << ". Use --all to run it.\n";
