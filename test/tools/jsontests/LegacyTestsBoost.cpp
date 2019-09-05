@@ -9,8 +9,6 @@ namespace fs = boost::filesystem;
 
 fs::path StateTestSuiteLegacyConstantinople::suiteFolder() const
 {
-    if (Options::get().fillchain || Options::get().filltests)
-        BOOST_FAIL("Legacy tests are sealed and not refillable!");
     return "LegacyTests/Constantinople/GeneralStateTests";
 }
 
@@ -21,8 +19,6 @@ fs::path StateTestSuiteLegacyConstantinople::suiteFillerFolder() const
 
 fs::path BCGeneralStateTestsSuiteLegacyConstantinople::suiteFolder() const
 {
-    if (Options::get().filltests)
-        BOOST_FAIL("Legacy tests are sealed and not refillable!");
     return "LegacyTests/Constantinople/BlockchainTests/GeneralStateTests";
 }
 
@@ -31,13 +27,16 @@ fs::path BCGeneralStateTestsSuiteLegacyConstantinople::suiteFillerFolder() const
     return "LegacyTests/Constantinople/BlockchainTestsFiller/GeneralStateTests";
 }
 
-
-class LegacyConstantinopleGeneralStateTestFixture
+template <class T>
+class LegacyTestFixtureBase
 {
 public:
-    LegacyConstantinopleGeneralStateTestFixture()
+    LegacyTestFixtureBase()
     {
-        StateTestSuiteLegacyConstantinople suite;
+        T suite;
+        if (Options::get().fillchain || Options::get().filltests)
+            BOOST_FAIL("Legacy tests are sealed and not refillable!");
+
         string casename = boost::unit_test::framework::current_test_case().p_name;
         boost::filesystem::path suiteFillerPath = suite.getFullPathFiller(casename).parent_path();
         if (!test::Options::get().all)
@@ -51,25 +50,14 @@ public:
     }
 };
 
-class LegacyConstantinopleBCGeneralStateTestFixture
+class LegacyConstantinopleGeneralStateTestFixture
+  : public LegacyTestFixtureBase<StateTestSuiteLegacyConstantinople>
 {
-public:
-    LegacyConstantinopleBCGeneralStateTestFixture()
-    {
-        BCGeneralStateTestsSuiteLegacyConstantinople suite;
-        string const casename = boost::unit_test::framework::current_test_case().p_name;
-        boost::filesystem::path suiteFillerPath = suite.getFullPathFiller(casename).parent_path();
+};
 
-        // skip this test suite if not run with --all flag (cases are already tested in state tests)
-        if (!test::Options::get().all)
-        {
-            cnote << "Skipping hive test " << casename << ". Use --all to run it.\n";
-            test::TestOutputHelper::get().markTestFolderAsFinished(suiteFillerPath, casename);
-            return;
-        }
-        suite.runAllTestsInFolder(casename);
-        test::TestOutputHelper::get().markTestFolderAsFinished(suiteFillerPath, casename);
-    }
+class LegacyConstantinopleBCGeneralStateTestFixture
+  : public LegacyTestFixtureBase<BCGeneralStateTestsSuiteLegacyConstantinople>
+{
 };
 
 
