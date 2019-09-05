@@ -39,7 +39,9 @@ public:
 
         string casename = boost::unit_test::framework::current_test_case().p_name;
         boost::filesystem::path suiteFillerPath = suite.getFullPathFiller(casename).parent_path();
-        if (!test::Options::get().all)
+        static vector<string> const timeConsumingTestSuites{
+            string{"stTimeConsuming"}, string{"stQuadraticComplexityTest"}};
+        if (test::inArray(timeConsumingTestSuites, casename) && !test::Options::get().all)
         {
             std::cout << "Skipping " << casename << " because --all option is not specified.\n";
             test::TestOutputHelper::get().markTestFolderAsFinished(suiteFillerPath, casename);

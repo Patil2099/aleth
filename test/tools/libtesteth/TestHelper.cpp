@@ -162,10 +162,6 @@ bool isDisabledNetwork(eth::Network _net)
     {
     case eth::Network::FrontierTest:
     case eth::Network::HomesteadTest:
-    case eth::Network::FrontierToHomesteadAt5:
-    case eth::Network::HomesteadToDaoAt5:
-    case eth::Network::HomesteadToEIP150At5:
-    case eth::Network::ConstantinopleTest:  // Disable initial constantinople version
         return true;
     default:
         break;
